@@ -1,5 +1,6 @@
 **Airbnb**
-Tech Stack:- Node.js, Express.js, MongoDB, EJS, REST API
+## Tech Stack:- Node.js, Express.js, MongoDB, EJS, REST API
+## Features
  • Developed a full-stack property booking web application using Node.js, Express.js, MongoDB, and EJS.
  • Built 25+ REST API endpoints for authentication, property listings, bookings, image uploads, search, and CRUD
    operations.
