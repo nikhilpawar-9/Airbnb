@@ -1,0 +1,128 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-4">
+
+    <div class="host-bookings-header">
+        <h2>
+            Host Bookings
+            <span class="text-muted">
+                (<%= bookings.length %>)
+            </span>
+        </h2>
+
+        <p class="text-muted">
+            Manage bookings made for your listings.
+        </p>
+    </div>
+
+
+    <% if (bookings.length === 0) { %>
+
+        <div class="host-bookings-empty">
+            <h5>No bookings yet</h5>
+
+            <p class="text-muted">
+                When guests book your listings, their bookings will appear here.
+            </p>
+        </div>
+
+    <% } else { %>
+
+
+        <div class="host-bookings-list">
+
+            <% bookings.forEach(booking => { %>
+
+                <div class="host-booking-card">
+
+                    <div class="host-booking-main">
+
+                        <h4>
+                            <%= booking.listing.title %>
+                        </h4>
+
+                        <p class="text-muted mb-3">
+                            Guest:
+                            <strong>
+                                <%= booking.user.username %>
+                            </strong>
+                        </p>
+
+
+                        <div class="booking-details">
+
+                            <div>
+                                <span class="booking-label">
+                                    Check-in
+                                </span>
+
+                                <strong>
+                                    <%= booking.checkIn.toLocaleDateString() %>
+                                </strong>
+                            </div>
+
+
+                            <div>
+                                <span class="booking-label">
+                                    Check-out
+                                </span>
+
+                                <strong>
+                                    <%= booking.checkOut.toLocaleDateString() %>
+                                </strong>
+                            </div>
+
+
+                            <div>
+                                <span class="booking-label">
+                                    Guests
+                                </span>
+
+                                <strong>
+                                    <%= booking.guests %>
+                                </strong>
+                            </div>
+
+
+                            <div>
+                                <span class="booking-label">
+                                    Total Price
+                                </span>
+
+                                <strong>
+                                    ₹<%= booking.totalPrice.toLocaleString() %>
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="host-booking-status">
+
+                        <% if (booking.status === "confirmed") { %>
+
+                            <span class="booking-status confirmed">
+                                Confirmed
+                            </span>
+
+                        <% } else { %>
+
+                            <span class="booking-status cancelled">
+                                Cancelled
+                            </span>
+
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+    <% } %>
+
+</div>

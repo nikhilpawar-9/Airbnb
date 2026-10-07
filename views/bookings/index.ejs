@@ -1,0 +1,117 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-4">
+
+    <div class="my-bookings-header">
+        <h2>
+            My Bookings
+            <span class="text-muted">(<%= bookings.length %>)</span>
+        </h2>
+        <p class="text-muted">
+            View and manage your bookings.
+        </p>
+    </div>
+
+    <% if (success) { %>
+        <div class="alert alert-success mt-3">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <% if (bookings.length === 0) { %>
+
+        <div class="my-bookings-empty">
+            <h5>No bookings yet</h5>
+            <p>
+                You don't have any bookings yet.
+            </p>
+            <a href="/listings" class="btn btn-dark">
+                Explore Listings
+            </a>
+        </div>
+
+    <% } else { %>
+
+        <% bookings.forEach(booking => { %>
+
+            <div class="my-booking-card">
+                <div class="my-booking-body">
+
+                    <h4>
+                        <%= booking.listing.title %>
+                    </h4>
+
+                    <p class="text-muted">
+                        <%= booking.listing.location %>,
+                        <%= booking.listing.country %>
+                    </p>
+
+                    <hr>
+
+                    <div class="my-booking-details">
+
+                        <p>
+                            <strong>Check-in:</strong>
+                            <%= booking.checkIn.toLocaleDateString() %>
+                        </p>
+
+                        <p>
+                            <strong>Check-out:</strong>
+                            <%= booking.checkOut.toLocaleDateString() %>
+                        </p>
+
+                        <p>
+                            <strong>Guests:</strong>
+                            <%= booking.guests %>
+                        </p>
+
+                        <p>
+                            <strong>Price per night:</strong>
+                            ₹<%= booking.listing.price %>
+                        </p>
+
+                        <p>
+                            <strong>Total Price:</strong>
+                            ₹<%= booking.totalPrice %>
+                        </p>
+
+                        <p class="my-booking-status-row">
+                            <strong>Status:</strong>
+
+                            <% if (booking.status === "confirmed") { %>
+                                <span class="my-booking-status confirmed">
+                                    Confirmed
+                                </span>
+                            <% } else { %>
+                                <span class="my-booking-status cancelled">
+                                    Cancelled
+                                </span>
+                            <% } %>
+                        </p>
+
+                    </div>
+
+                    <% if (booking.status === "confirmed") { %>
+
+                        <form
+                            action="/bookings/<%= booking._id %>/cancel"
+                            method="POST"
+                            class="mt-3"
+                            onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+
+                            <button type="submit" class="btn btn-danger">
+                                Cancel Booking
+                            </button>
+
+                        </form>
+
+                    <% } %>
+
+                </div>
+            </div>
+
+        <% }) %>
+
+    <% } %>
+
+</div>

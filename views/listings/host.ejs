@@ -1,0 +1,97 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-4">
+
+    <div class="my-listings-header">
+        <h2>
+            My Listings
+            <span class="text-muted">(<%= listings.length %>)</span>
+        </h2>
+
+        <p class="text-muted">
+            Manage the listings you have created.
+        </p>
+    </div>
+
+
+    <% if (listings.length === 0) { %>
+
+        <div class="my-listings-empty">
+            <h5>No listings yet</h5>
+
+            <p>
+                You haven't created any listings yet.
+            </p>
+
+            <a href="/listings/new" class="btn btn-dark">
+                Add Listing
+            </a>
+        </div>
+
+    <% } else { %>
+
+        <div class="my-listings-list">
+
+            <% listings.forEach(listing => { %>
+
+                <div class="my-listing-card">
+
+                    <div class="my-listing-main">
+
+                        <h4>
+                            <%= listing.title %>
+                        </h4>
+
+                        <p class="text-muted mb-3">
+                            <%= listing.location %>,
+                            <%= listing.country %>
+                        </p>
+
+
+                        <div class="my-listing-details">
+
+                            <div>
+                                <span class="my-listing-label">
+                                    Price
+                                </span>
+
+                                <strong>
+                                    ₹<%= listing.price.toLocaleString() %> / night
+                                </strong>
+                            </div>
+
+
+                            <div>
+                                <span class="my-listing-label">
+                                    Maximum Guests
+                                </span>
+
+                                <strong>
+                                    <%= listing.maxGuests %>
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="my-listing-action">
+
+                        <a
+                            href="/listings/<%= listing._id %>"
+                            class="btn btn-dark">
+                            View Listing
+                        </a>
+
+                    </div>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+    <% } %>
+
+</div>

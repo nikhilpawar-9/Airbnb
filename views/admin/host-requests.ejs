@@ -1,0 +1,98 @@
+<% layout("layouts/boilerplate") %>
+<% if (success) { %>
+    <div class="container">
+        <div class="alert alert-success mt-3">
+            <%= success %>
+        </div>
+    </div>
+<% } %>
+
+<div class="admin-page container mt-4">
+
+    <div class="admin-header">
+        <div>
+            <h2>
+                Host Requests (<%= users.length %>)
+            </h2>
+            <p class="text-muted">
+                Review users who want to become hosts.
+            </p>
+        </div>
+    </div>
+
+
+    <% if (users.length === 0) { %>
+
+        <div class="admin-empty">
+            <h5>No pending host requests</h5>
+            <p>
+                There are currently no users waiting for host approval.
+            </p>
+        </div>
+
+    <% } else { %>
+
+        <div class="admin-requests">
+
+            <% users.forEach(user => { %>
+
+                <div class="admin-request-card">
+
+                    <div class="admin-user-info">
+
+                        <h5>
+                            <%= user.username %>
+                        </h5>
+
+                        <p>
+                            <%= user.email %>
+                        </p>
+
+                    </div>
+
+
+                    <div class="admin-request-status">
+                        <span class="status-pending">
+                            Pending
+                        </span>
+                    </div>
+
+
+                    <div class="admin-request-actions">
+
+                        <form
+                            action="/admin/host-requests/<%= user._id %>/approve"
+                            method="POST"
+                        >
+                            <button
+                                type="submit"
+                                class="btn btn-success"
+                            >
+                                Approve
+                            </button>
+                        </form>
+
+
+                        <form
+                            action="/admin/host-requests/<%= user._id %>/reject"
+                            method="POST"
+                        >
+                            <button
+                                type="submit"
+                                class="btn btn-danger"
+                            >
+                                Reject
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+    <% } %>
+
+</div>

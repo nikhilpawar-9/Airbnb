@@ -1,0 +1,116 @@
+<% layout('layouts/boilerplate') %>
+<body>
+    <div class="container mt-4">
+    <form action="/listings" method="GET" class="listing-search-bar">
+
+    <div class="search-input">
+        <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Search by destination..."
+            value="<%= q || '' %>"
+        >
+    </div>
+
+    <div class="search-filter">
+        <select name="country" class="form-select">
+
+            <option value="">
+                All Countries
+            </option>
+
+            <option
+                value="India"
+                <%= country === "India" ? "selected" : "" %>
+            >
+                India
+            </option>
+
+            <option
+                value="United States"
+                <%= country === "United States" ? "selected" : "" %>
+            >
+                United States
+            </option>
+
+            <option
+                value="France"
+                <%= country === "France" ? "selected" : "" %>
+            >
+                France
+            </option>
+
+            <option
+                value="Japan"
+                <%= country === "Japan" ? "selected" : "" %>
+            >
+                Japan
+            </option>
+
+        </select>
+    </div>
+
+    <div class="search-filter">
+        <select name="sort" class="form-select">
+
+            <option value="">
+                Sort by Price
+            </option>
+
+            <option
+                value="price-asc"
+                <%= sort === "price-asc" ? "selected" : "" %>
+            >
+                Price: Low to High
+            </option>
+
+            <option
+                value="price-desc"
+                <%= sort === "price-desc" ? "selected" : "" %>
+            >
+                Price: High to Low
+            </option>
+
+        </select>
+    </div>
+
+    <button type="submit" class="search-btn">
+        Search
+    </button>
+
+</form>
+</div>
+        <h3>All Listings</h3>
+        <!-- <form action="/listings/new" method="GET">
+        <button type="submit">Create New Listing</button>
+    </form> -->
+
+        <% if (listings.length === 0) { %>
+
+        <div class="text-center mt-5">
+            <h4>No listings found</h4>
+            <p class="text-muted">
+                Try changing your search or filters.
+            </p>
+        </div>
+
+        <% } else { %>
+        <div class="row row-cols-lg-3 row-cols-md-2" row-cols-sm-1>
+            <% listings.forEach(listing=> { %>
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+                <div class="card">
+                    <img class="card-img-top" src="<%= listing.image.url %>" alt="Listing_image" style="height: 20rem;">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <b><%= listing.title %></b> <br>
+                            &#8377 <%= listing.price.toLocaleString() %> / night <br>
+                        </p>
+                    </div>
+                </div>
+                </a>
+            <% }); %>
+        </div>
+         <% } %>
+ </body>

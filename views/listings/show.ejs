@@ -1,0 +1,321 @@
+<% layout('layouts/boilerplate') %>
+<!-- Listing Details -->
+<div class="show-page">
+    <h2 class="show-title">Listing Details</h2>
+
+    <div class="show-image-card">
+        <img src="<%= listing.image.url %>" class="show-image" alt="Listing image">
+    </div>
+
+    <b><div class="show-image-label"><%= listing.title %></div></b>
+
+    <ul class="show-list">
+        <li><%= listing.description %>.</li>
+        <li>&#8377; <%= listing.price.toLocaleString() %> / night</li>
+        <li><%= listing.location %></li>
+        <li><%= listing.country %></li>
+    </ul>
+    
+    <% if (currentUser && listing.owner._id.equals(currentUser._id)) { %>
+        <div class="show-actions">
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark">
+                Edit
+            </a>
+
+            <form
+                action="/listings/<%= listing._id %>?_method=DELETE"
+                method="POST"
+                class="d-inline show-delete-form">
+
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                    onclick="return confirm('Are you sure you want to delete this listing?');">
+                    Delete
+                </button>
+            </form>
+            </div>
+
+    <% } %>
+
+    <!-- Booking -->
+    <% if (currentUser && !listing.owner._id.equals(currentUser._id)) { %>
+        
+    <div class="mt-4">
+        <h4>Book this place :</h4>
+
+        <form action="/listings/<%= listing._id %>/bookings" method="POST">
+
+            <div class="mb-3">
+                <label class="form-label">Check-in</label>
+                <input
+                    type="date"
+                    name="checkIn"
+                    id="checkIn"
+                    class="form-control"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Check-out</label>
+                <input
+                    type="date"
+                    name="checkOut"
+                    id="checkOut"
+                    class="form-control"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Guests</label>
+                <input
+                    type="number"
+                    name="guests"
+                    class="form-control"
+                    min="1"
+                    max="<%= listing.maxGuests %>"
+                    value="1"
+                    required
+                >
+                <small class="text-muted">
+                    Maximum <%= listing.maxGuests %> guests allowed
+                </small>
+            </div>
+            <div
+                class="mb-3"
+                id="bookingPrice"
+                data-price="<%= listing.price %>">
+                <strong>
+                    Total Price:
+                    ₹<span id="totalPrice">0</span>
+                </strong>
+            </div>
+
+            <div id="availabilityMessage" class="mb-3"></div>
+
+            <button type="submit" class="btn btn-dark" id="bookButton">
+                Book Now
+            </button>
+
+        </form>
+
+        <script>
+            const checkIn = document.getElementById("checkIn");
+            const checkOut = document.getElementById("checkOut");
+            const totalPrice = document.getElementById("totalPrice");
+            const bookButton = document.getElementById("bookButton");
+            const availabilityMessage =
+                document.getElementById("availabilityMessage");
+
+            const pricePerNight =
+                Number(document.getElementById("bookingPrice").dataset.price);
+
+
+            // Prevent past check-in dates
+            const today = new Date().toISOString().split("T")[0];
+            checkIn.min = today;
+
+
+            // Update checkout minimum when check-in changes
+            checkIn.addEventListener("change", function () {
+
+                const checkInDate = new Date(this.value);
+
+                checkInDate.setDate(checkInDate.getDate() + 1);
+
+                const minCheckOut =
+                    checkInDate.toISOString().split("T")[0];
+
+                checkOut.min = minCheckOut;
+
+                calculateTotal();
+            });
+
+
+            // Calculate total booking price
+            checkOut.addEventListener("change", calculateTotal);
+
+
+            // Check availability when checkout date changes
+            checkOut.addEventListener("change", checkAvailability);
+
+
+            function calculateTotal() {
+
+                if (!checkIn.value || !checkOut.value) {
+                    totalPrice.textContent = "0";
+                    return;
+                }
+
+                const startDate = new Date(checkIn.value);
+                const endDate = new Date(checkOut.value);
+
+                const nights =
+                    (endDate - startDate) / (1000 * 60 * 60 * 24);
+
+                if (nights > 0) {
+
+                    totalPrice.textContent =
+                        (nights * pricePerNight).toLocaleString();
+
+                } else {
+
+                    totalPrice.textContent = "0";
+
+                }
+            }
+            // Check whether selected dates are available
+            async function checkAvailability() {
+
+                if (!checkIn.value || !checkOut.value) {
+                    availabilityMessage.innerHTML = "";
+                    bookButton.disabled = true;
+                    return;
+                }
+
+                const response = await fetch(
+                    `/listings/<%= listing._id %>/availability?checkIn=${checkIn.value}&checkOut=${checkOut.value}`
+                );
+
+                const data = await response.json();
+
+                if (data.available) {
+
+                    availabilityMessage.innerHTML =
+                        `<span class="text-success">
+                            Dates are available ✓
+                        </span>`;
+
+                    bookButton.disabled = false;
+
+                } else {
+
+                    availabilityMessage.innerHTML =
+                        `<span class="text-danger">
+                            These dates are already booked.
+                        </span>`;
+
+                    bookButton.disabled = true;
+                }
+            }
+        </script>
+    </div>
+
+<% } %>
+
+<!-- Reviews -->
+    <% if (currentUser && !hasReviewed) { %>
+
+    <div class="mt-4">
+        <h4>Leave a Review</h4>
+
+        <form action="/listings/<%= listing._id %>/reviews" method="POST">
+
+            <div class="mb-3">
+                 <label class="form-label">Rating</label>
+
+        <div class="star-rating">
+            <input type="radio" name="rating" value="5" id="star5">
+            <label for="star5">★</label>
+
+            <input type="radio" name="rating" value="4" id="star4">
+            <label for="star4">★</label>
+
+            <input type="radio" name="rating" value="3" id="star3">
+            <label for="star3">★</label>
+
+            <input type="radio" name="rating" value="2" id="star2">
+            <label for="star2">★</label>
+
+            <input type="radio" name="rating" value="1" id="star1" required>
+            <label for="star1">★</label>
+        </div>
+        </div>
+
+            <div class="mb-3">
+                <label>Comment</label>
+
+                <textarea
+                    name="comment"
+                    class="form-control"
+                    rows="4"
+                    required
+                ></textarea>
+            </div>
+
+            <button class="btn btn-dark">
+                Submit Review
+            </button>
+
+        </form>
+    </div>
+<!-- show reviews -->
+    <% } %>
+    <% if (reviews.length > 0) { %>
+
+    <div class="mt-5">
+        <h4>
+            Reviews (<%= reviews.length %>)
+
+            <% if (reviews.length > 0) { %>
+                <span class="text-warning">
+                    ★ <%= averageRating.toFixed(1) %>
+                </span>
+            <% } %>
+        </h4>
+
+        <% reviews.forEach(review => { %>
+
+            <div class="border rounded p-3 mt-3">
+
+                <div>
+                    <strong>
+                        <%= review.author.username %>
+                    </strong>
+                    <br>
+                    <small class="text-muted">
+                        <% if (review.createdAt) { %>
+                            Reviewed on <%= review.createdAt.toLocaleDateString() %>
+                        <% } %>
+                    </small>
+                </div>
+
+                <div class="text-warning">
+                    <% for (let i = 0; i < review.rating; i++) { %>
+                        ★
+                    <% } %>
+
+                    <% for (let i = review.rating; i < 5; i++) { %>
+                        ☆
+                    <% } %>
+                </div>
+
+                <p class="mt-2 mb-0">
+                    <%= review.comment %>
+                </p>
+                
+                <% if (currentUser && review.author._id.equals(currentUser._id)) { %>
+
+                <form
+                    action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+                    method="POST"
+                    class="mt-2">
+
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Delete Review
+                    </button>
+
+                </form>
+                <% } %>
+            </div>
+
+        <% }); %>
+
+    </div>
+
+<% } %>
+    <br>
+</div>
+
