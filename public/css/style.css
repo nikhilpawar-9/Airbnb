@@ -118,6 +118,10 @@ body {
   color: inherit;
 }
 
+.listing-link .card-text {
+    text-align: center;
+}
+
 /* Card Effect */
 .card-img-overlay {
   opacity: 0;
